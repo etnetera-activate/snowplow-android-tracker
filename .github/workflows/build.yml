@@ -1,0 +1,47 @@
+name: Build
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level:
+          - 21 
+          - 24
+          - 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Run Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: google_apis
+          script: |
+            adb logcat -c
+            adb logcat > logcat.log &
+            ./gradlew createDebugCoverageReport
+        env:
+          API_LEVEL: ${{ matrix.api-level }}
+
+      - name: Load logs if failed
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with: 
+          name: logcat-${{ matrix.api-level }}
+          path: logcat.log
+
+      - name: Load code coverage report
+        if: success() && matrix.api-level == '24'
+        env: 
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: ./gradlew coveralls

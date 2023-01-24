@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+project.ext {
+    archLifecycleVersion = "2.2.0"
+}
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.snowplowanalytics.snowplowtrackerdemo"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 3
+        versionName "0.3.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            testCoverageEnabled = true
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "snowplow-demo-app-${output.baseName}.apk"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation "androidx.lifecycle:lifecycle-extensions:$project.archLifecycleVersion"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':snowplow-android-tracker')
+    implementation 'androidx.browser:browser:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+}
