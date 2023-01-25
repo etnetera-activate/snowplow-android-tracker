@@ -16,7 +16,6 @@ package com.snowplowanalytics.snowplowtrackerdemo.utils;
 import androidx.annotation.NonNull;
 
 import com.snowplowanalytics.snowplow.controller.TrackerController;
-import com.snowplowanalytics.snowplow.event.AbstractPrimitive;
 import com.snowplowanalytics.snowplow.event.DeepLinkReceived;
 import com.snowplowanalytics.snowplow.event.MessageNotification;
 import com.snowplowanalytics.snowplow.event.MessageNotificationTrigger;
@@ -49,7 +48,7 @@ public class TrackerEvents {
         //trackDeepLink(tracker);
         //trackPageView(tracker);
         trackScreenView(tracker);
-        trackUnstructuredEvent(tracker);
+        trackLoginEvent(tracker);
         //trackStructuredEvent(tracker);
         //trackTimings(tracker);
         //trackEcommerceEvent(tracker);
@@ -60,31 +59,24 @@ public class TrackerEvents {
 
     private static void trackScreenView(TrackerController tracker) {
         ScreenView event = new ScreenView("screen", UUID.randomUUID());
+        tracker.track(event);
+    }
+
+    private static void trackLoginEvent(TrackerController tracker) {
+       /*
         event.customContexts.add(
-                new SelfDescribingJson("iglu:cz.kb/application/jsonschema/1-0-0",
-                        new HashMap<String, String>() {{
-                            put("channel", "NDB");
-                            put("platform", "Android");
-                            put("environment", "PROD");
-                            put("language", "cs-CZ");
-                        }})
-        );
-        event.customContexts.add(
-                new SelfDescribingJson("iglu:cz.kb/screen/jsonschema/1-0-0",
+                new SelfDescribingJson("cz.kb/screen/jsonschema/1-0-0",
                         new HashMap<String, String>() {{
                             put("techName", "Home");
                         }})
         );
-
-        tracker.track(event);
-    }
-
-    private static void trackUnstructuredEvent(TrackerController tracker) {
+         */
 
         Map<String, String> attributes = new HashMap<>();
+        attributes.put("event", "login.customer");
         attributes.put("authenticationMethod", "KB klíč");
 
-        SelfDescribingJson test = new SelfDescribingJson("iglu:cz.kb/login/jsonschema/1-0-0", attributes);
+        SelfDescribingJson test = new SelfDescribingJson("cz.kb/login_event/jsonschema/1-0-0", attributes);
         tracker.track(new SelfDescribing(test));
     }
 
