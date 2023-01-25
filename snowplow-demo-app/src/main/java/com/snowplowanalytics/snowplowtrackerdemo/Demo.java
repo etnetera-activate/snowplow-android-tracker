@@ -68,6 +68,7 @@ import com.snowplowanalytics.snowplow.util.TimeMeasure;
 import com.snowplowanalytics.snowplowtrackerdemo.utils.DemoUtils;
 import com.snowplowanalytics.snowplowtrackerdemo.utils.TrackerEvents;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -322,6 +323,27 @@ public class Demo extends Activity implements LoggerDelegate {
         addToMap("id", "snowplow", pairs);
         addToMap("email", "info@snowplow.io", pairs);
         gcConfiguration.add("ruleSetExampleTag", new GlobalContext(Collections.singletonList(new SelfDescribingJson(SCHEMA_IDENTIFY, pairs))));
+
+        SelfDescribingJson applicationContext = new SelfDescribingJson(
+                "iglu:cz.kb/application/jsonschema/1-0-0",
+                new HashMap<String, String>() {{
+                    put("channel", "NDB");
+                    put("platform", "Android");
+                    put("environment", "PROD");
+                    put("language", "cs-CZ");
+                }}
+        );
+        GlobalContext applicationGlobalContext = new GlobalContext(Arrays.asList(applicationContext));
+        gcConfiguration.add("applicationContext", applicationGlobalContext);
+
+        SelfDescribingJson screenContext = new SelfDescribingJson(
+                "iglu:cz.kb/screen/jsonschema/1-0-0",
+                new HashMap<String, String>() {{
+                    put("techName", "Home");
+                }}
+        );
+        GlobalContext screenGlobalContext = new GlobalContext(Arrays.asList(screenContext));
+        gcConfiguration.add("screenContext", screenGlobalContext);
 
         Snowplow.createTracker(getApplicationContext(),
                 namespace,

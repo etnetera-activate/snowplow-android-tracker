@@ -46,18 +46,52 @@ import java.util.UUID;
 public class TrackerEvents {
 
     public static void trackAll(@NonNull TrackerController tracker) {
-        trackDeepLink(tracker);
-        trackPageView(tracker);
-        trackStructuredEvent(tracker);
+        //trackDeepLink(tracker);
+        //trackPageView(tracker);
         trackScreenView(tracker);
-        trackTimings(tracker);
         trackUnstructuredEvent(tracker);
-        trackEcommerceEvent(tracker);
-        trackConsentGranted(tracker);
-        trackConsentWithdrawn(tracker);
-        trackMessageNotification(tracker);
+        //trackStructuredEvent(tracker);
+        //trackTimings(tracker);
+        //trackEcommerceEvent(tracker);
+        //trackConsentGranted(tracker);
+        //trackConsentWithdrawn(tracker);
+        //trackMessageNotification(tracker);
     }
-    
+
+    private static void trackScreenView(TrackerController tracker) {
+        ScreenView event = new ScreenView("screen", UUID.randomUUID());
+        event.customContexts.add(
+                new SelfDescribingJson("iglu:cz.kb/application/jsonschema/1-0-0",
+                        new HashMap<String, String>() {{
+                            put("channel", "NDB");
+                            put("platform", "Android");
+                            put("environment", "PROD");
+                            put("language", "cs-CZ");
+                        }})
+        );
+        event.customContexts.add(
+                new SelfDescribingJson("iglu:cz.kb/screen/jsonschema/1-0-0",
+                        new HashMap<String, String>() {{
+                            put("techName", "Home");
+                        }})
+        );
+
+        tracker.track(event);
+    }
+
+    private static void trackUnstructuredEvent(TrackerController tracker) {
+
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("authenticationMethod", "KB klíč");
+
+        SelfDescribingJson test = new SelfDescribingJson("iglu:cz.kb/login/jsonschema/1-0-0", attributes);
+        tracker.track(new SelfDescribing(test));
+    }
+
+    private static void trackStructuredEvent(TrackerController tracker) {
+        tracker.track(new Structured("category", "action").label("label").property("property").value(0.00));
+    }
+
     private static void trackDeepLink(TrackerController tracker) {
         DeepLinkReceived event = new DeepLinkReceived("http://snowplow.io/path?param=value&param2=value2")
                 .referrer("http://snowplow.io/path?param=value&param2=value2");
@@ -68,23 +102,8 @@ public class TrackerEvents {
         tracker.track(new PageView("pageUrl").pageTitle("pageTitle").referrer("pageReferrer"));
     }
 
-    private static void trackStructuredEvent(TrackerController tracker) {
-        tracker.track(new Structured("category", "action").label("label").property("property").value(0.00));
-    }
-
-    private static void trackScreenView(TrackerController tracker) {
-        tracker.track(new ScreenView("screenName1", UUID.randomUUID()));
-    }
-
     private static void trackTimings(TrackerController tracker) {
         tracker.track(new Timing("category","variable", 1).label("label"));
-    }
-
-    private static void trackUnstructuredEvent(TrackerController tracker) {
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("targetUrl", "http://a-target-url.com");
-        SelfDescribingJson test = new SelfDescribingJson("iglu:com.snowplowanalytics.snowplow/link_click/jsonschema/1-0-1", attributes);
-        tracker.track(new SelfDescribing(test));
     }
 
     private static void trackEcommerceEvent(TrackerController tracker) {
