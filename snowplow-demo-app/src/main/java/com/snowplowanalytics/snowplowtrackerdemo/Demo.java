@@ -325,7 +325,7 @@ public class Demo extends Activity implements LoggerDelegate {
         gcConfiguration.add("ruleSetExampleTag", new GlobalContext(Collections.singletonList(new SelfDescribingJson(SCHEMA_IDENTIFY, pairs))));
 
         SelfDescribingJson applicationContext = new SelfDescribingJson(
-                "iglu:cz.kb/application/jsonschema/1-0-0",
+                "cz.kb/application/jsonschema/1-0-0",
                 new HashMap<String, String>() {{
                     put("channel", "NDB");
                     put("platform", "Android");
@@ -337,7 +337,7 @@ public class Demo extends Activity implements LoggerDelegate {
         gcConfiguration.add("applicationContext", applicationGlobalContext);
 
         SelfDescribingJson screenContext = new SelfDescribingJson(
-                "iglu:cz.kb/screen/jsonschema/1-0-0",
+                "cz.kb/screen/jsonschema/1-0-0",
                 new HashMap<String, String>() {{
                     put("techName", "Home");
                 }}
