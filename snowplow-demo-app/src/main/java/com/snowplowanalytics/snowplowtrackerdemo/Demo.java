@@ -107,24 +107,24 @@ public class Demo extends Activity implements LoggerDelegate {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
-        _startButton   = (Button)findViewById(R.id.btn_lite_start);
-        _tabButton     = (Button)findViewById(R.id.btn_lite_tab);
-        _uriField      = (EditText)findViewById(R.id.uri_field);
-        _type          = (RadioGroup)findViewById(R.id.radio_send_type);
-        _remoteConfig  = (RadioGroup)findViewById(R.id.radio_config_type);
-        _collection    = (RadioGroup)findViewById(R.id.radio_data_collection);
-        _radioGet      = (RadioButton)findViewById(R.id.radio_get);
-        _radioRemoteConfig = (RadioButton)findViewById(R.id.radio_remote_config);
-        _logOutput     = (TextView)findViewById(R.id.log_output);
-        _eventsCreated = (TextView)findViewById(R.id.created_events);
-        _eventsSent    = (TextView)findViewById(R.id.sent_events);
-        _emitterOnline = (TextView)findViewById(R.id.online_status);
-        _emitterStatus = (TextView)findViewById(R.id.emitter_status);
-        _databaseSize  = (TextView)findViewById(R.id.database_size);
-        _sessionIndex  = (TextView)findViewById(R.id.session_index);
-        _webViewUriField = (EditText)findViewById(R.id.web_view_uri_field);
-        _webView       = (WebView) findViewById(R.id.web_view);
-        _loadWebViewButton = (Button)findViewById(R.id.btn_load_webview);
+        _startButton = (Button) findViewById(R.id.btn_lite_start);
+        _tabButton = (Button) findViewById(R.id.btn_lite_tab);
+        _uriField = (EditText) findViewById(R.id.uri_field);
+        _type = (RadioGroup) findViewById(R.id.radio_send_type);
+        _remoteConfig = (RadioGroup) findViewById(R.id.radio_config_type);
+        _collection = (RadioGroup) findViewById(R.id.radio_data_collection);
+        _radioGet = (RadioButton) findViewById(R.id.radio_get);
+        _radioRemoteConfig = (RadioButton) findViewById(R.id.radio_remote_config);
+        _logOutput = (TextView) findViewById(R.id.log_output);
+        _eventsCreated = (TextView) findViewById(R.id.created_events);
+        _eventsSent = (TextView) findViewById(R.id.sent_events);
+        _emitterOnline = (TextView) findViewById(R.id.online_status);
+        _emitterStatus = (TextView) findViewById(R.id.emitter_status);
+        _databaseSize = (TextView) findViewById(R.id.database_size);
+        _sessionIndex = (TextView) findViewById(R.id.session_index);
+        _webViewUriField = (EditText) findViewById(R.id.web_view_uri_field);
+        _webView = (WebView) findViewById(R.id.web_view);
+        _loadWebViewButton = (Button) findViewById(R.id.btn_load_webview);
 
         _logOutput.setMovementMethod(new ScrollingMovementMethod());
         _logOutput.setText("");
@@ -153,9 +153,11 @@ public class Demo extends Activity implements LoggerDelegate {
     protected void onResume() {
         super.onResume();
         TrackerController tracker = Snowplow.getDefaultTracker();
-        if (tracker == null) return;
+        if (tracker == null)
+            return;
         SessionController session = tracker.getSession();
-        if (session == null) return;
+        if (session == null)
+            return;
         session.resume();
     }
 
@@ -167,7 +169,8 @@ public class Demo extends Activity implements LoggerDelegate {
             @Override
             public void onClick(View v) {
                 TrackerController trackerController = Snowplow.getDefaultTracker();
-                if (trackerController == null) return;
+                if (trackerController == null)
+                    return;
                 SessionController sessionController = trackerController.getSession();
                 if (sessionController != null) {
                     sessionController.pause();
@@ -220,7 +223,8 @@ public class Demo extends Activity implements LoggerDelegate {
                 if (uri.isEmpty()) {
                     updateLogger("Web view URI is empty!");
                 } else {
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                    SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(getApplicationContext()).edit();
                     editor.putString("webViewUri", uri).apply();
 
                     _webView.loadUrl(uri);
@@ -248,8 +252,7 @@ public class Demo extends Activity implements LoggerDelegate {
         }
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
         editor.putString("uri", uri).apply();
-        HttpMethod method = _type.getCheckedRadioButtonId() ==
-                _radioGet.getId() ? HttpMethod.GET : HttpMethod.POST;
+        HttpMethod method = _type.getCheckedRadioButtonId() == _radioGet.getId() ? HttpMethod.GET : HttpMethod.POST;
 
         RemoteConfiguration remoteConfig = new RemoteConfiguration(uri, method);
         Snowplow.setup(getApplicationContext(), remoteConfig, null, configurationPair -> {
@@ -275,8 +278,7 @@ public class Demo extends Activity implements LoggerDelegate {
             updateLogger("URI field empty!");
             return false;
         }
-        HttpMethod method = _type.getCheckedRadioButtonId() ==
-                _radioGet.getId() ? HttpMethod.GET : HttpMethod.POST;
+        HttpMethod method = _type.getCheckedRadioButtonId() == _radioGet.getId() ? HttpMethod.GET : HttpMethod.POST;
 
         NetworkConfiguration networkConfiguration = new NetworkConfiguration(uri, method);
         networkConfiguration.customPostPath = "mobile";
@@ -294,54 +296,59 @@ public class Demo extends Activity implements LoggerDelegate {
                 .sessionContext(true)
                 .platformContext(true)
                 .applicationContext(true)
+                .screenContext(true)
                 .geoLocationContext(true)
                 .lifecycleAutotracking(true)
                 .screenViewAutotracking(true)
-                .screenContext(true)
                 .exceptionAutotracking(true)
                 .installAutotracking(true)
                 .diagnosticAutotracking(true);
+
         SessionConfiguration sessionConfiguration = new SessionConfiguration(
                 new TimeMeasure(6, TimeUnit.SECONDS),
-                new TimeMeasure(30, TimeUnit.SECONDS)
-        )
-                .onSessionUpdate(state -> updateLogger(
-                        "Session: " + state.getSessionId()
-                                + "\r\nprevious: " + state.getPreviousSessionId()
-                                + "\r\neventId: " + state.getFirstEventId()
-                                + "\r\nindex: " + state.getSessionIndex()
-                                + "\r\nuserId: " + state.getUserId()
-                ));
+                new TimeMeasure(30, TimeUnit.SECONDS)).onSessionUpdate(
+                        state -> updateLogger(
+                                "Session: " + state.getSessionId()
+                                        + "\r\nprevious: " + state.getPreviousSessionId()
+                                        + "\r\neventId: " + state.getFirstEventId()
+                                        + "\r\nindex: " + state.getSessionIndex()
+                                        + "\r\nuserId: " + state.getUserId()));
+
         GdprConfiguration gdprConfiguration = new GdprConfiguration(
                 Basis.CONSENT,
                 "someId",
                 "0.1.0",
-                "this is a demo document description"
-        );
-        GlobalContextsConfiguration gcConfiguration = new GlobalContextsConfiguration(null);
-        Map<String, Object> pairs = new HashMap<>();
-        addToMap("id", "snowplow", pairs);
-        addToMap("email", "info@snowplow.io", pairs);
-        gcConfiguration.add("ruleSetExampleTag", new GlobalContext(Collections.singletonList(new SelfDescribingJson(SCHEMA_IDENTIFY, pairs))));
+                "this is a demo document description");
+
+        // GlobalContextsConfiguration gcConfiguration = new
+        // GlobalContextsConfiguration(null);
+        // Map<String, Object> pairs = new HashMap<>();
+        // addToMap("id", "snowplow", pairs);
+        // addToMap("email", "info@snowplow.io", pairs);
+        // gcConfiguration.add("ruleSetExampleTag", new
+        // GlobalContext(Collections.singletonList(new
+        // SelfDescribingJson(SCHEMA_IDENTIFY, pairs))));
 
         SelfDescribingJson applicationContext = new SelfDescribingJson(
-                "cz.kb/application/jsonschema/1-0-0",
-                new HashMap<String, String>() {{
-                    put("channel", "NDB");
-                    put("platform", "Android");
-                    put("environment", "PROD");
-                    put("language", "cs-CZ");
-                }}
-        );
+                "cz.kb/application_cntext/jsonschema/1-0-0",
+                new HashMap<String, String>() {
+                    {
+                        put("channel", "NDB");
+                        put("platform", "Android");
+                        put("environment", "PROD");
+                        put("language", "cs-CZ");
+                    }
+                });
         GlobalContext applicationGlobalContext = new GlobalContext(Arrays.asList(applicationContext));
         gcConfiguration.add("applicationContext", applicationGlobalContext);
 
         SelfDescribingJson screenContext = new SelfDescribingJson(
-                "cz.kb/screen/jsonschema/1-0-0",
-                new HashMap<String, String>() {{
-                    put("techName", "Home");
-                }}
-        );
+                "cz.kb/screen_context/jsonschema/1-0-0",
+                new HashMap<String, String>() {
+                    {
+                        put("techName", "Home");
+                    }
+                });
         GlobalContext screenGlobalContext = new GlobalContext(Arrays.asList(screenContext));
         gcConfiguration.add("screenContext", screenGlobalContext);
 
@@ -352,8 +359,7 @@ public class Demo extends Activity implements LoggerDelegate {
                 emitterConfiguration,
                 sessionConfiguration,
                 gdprConfiguration,
-                gcConfiguration
-        );
+                gcConfiguration);
         Snowplow.subscribeToWebViewEvents(_webView);
         return true;
     }
@@ -377,12 +383,13 @@ public class Demo extends Activity implements LoggerDelegate {
             callbackIsGranted.accept(true);
             return;
         }
-        final String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+        final String[] permissions = new String[] { Manifest.permission.ACCESS_FINE_LOCATION };
         ActivityCompat.requestPermissions(this, permissions, APP_PERMISSION_REQUEST_LOCATION);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         if (Build.VERSION.SDK_INT < 24) {
             return;
         }
@@ -431,12 +438,12 @@ public class Demo extends Activity implements LoggerDelegate {
      * Updates the various UI elements based on information
      * about the Tracker and Emitter.
      *
-     * @param isOnline is the device online
+     * @param isOnline  is the device online
      * @param isRunning is the emitter running
-     * @param dbSize the database event size
+     * @param dbSize    the database event size
      */
     private void updateEmitterStats(final boolean isOnline, final boolean isRunning, final long dbSize,
-                                    final int sessionIndex) {
+            final int sessionIndex) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -482,7 +489,8 @@ public class Demo extends Activity implements LoggerDelegate {
             public void run() {
                 boolean isOnline = Util.isOnline(context);
                 TrackerController tracker = Snowplow.getDefaultTracker();
-                if (tracker == null) return;
+                if (tracker == null)
+                    return;
                 EmitterController e = tracker.getEmitter();
                 boolean isRunning = e.isSending();
                 long dbSize = e.getDbCount();
@@ -504,6 +512,7 @@ public class Demo extends Activity implements LoggerDelegate {
                         "- Events sent: " + successCount + "\n");
                 updateEventsSent(successCount);
             }
+
             @Override
             public void onFailure(int successCount, int failureCount) {
                 updateLogger("Emitter Send Failure:\n " +
